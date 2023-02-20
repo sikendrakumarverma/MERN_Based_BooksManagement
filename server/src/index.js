@@ -1,0 +1,37 @@
+const express = require('express')
+const bodyParser = require('body-parser')
+const route = require('./routes/route.js')
+const cors= require('cors');
+
+
+
+const multer= require("multer");
+const { AppConfig } = require('aws-sdk');
+
+const  mongoose  = require('mongoose')
+const app = express()
+
+app.use(bodyParser.json())
+app.use(cors());
+// ...................................for AWS........................
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use( multer().any())
+
+mongoose.connect("mongodb+srv://plutoniumVikas:1234567890@cluster-v.0x22h8i.mongodb.net/group62Database", {
+        useNewUrlParser: true
+    })
+    .then(() => console.log("MongoDb is connected"))
+    .catch(err => console.log(err))
+
+app.use('/', route);
+
+
+
+app.use(function (req, res) {
+    return res.status(400).send({status : false, message : "path not found"})
+    });
+
+
+app.listen(process.env.PORT || 8080, function () {
+    console.log('Express app running on port ' + (process.env.PORT || 8080))
+});
