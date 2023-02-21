@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import { useNavigate} from "react-router-dom";
+import Swal from "sweetalert2";
 
 function GetAllBooksList() {
 
@@ -24,7 +25,20 @@ function GetAllBooksList() {
         })
             .then((response) => {
                 setData(response.data.data)
-                alert(`success : ${response.data.message}`)
+                //alert(`success : ${response.data.message}`)
+                Swal.fire({
+                    // position: 'top-end',
+                    icon: 'success',
+                    title: response.data.message,
+                    showConfirmButton: false,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    },
+                     timer: 2500
+                })
             })
             .catch((error) => {
                 console.log("error :", error.response.data.message)

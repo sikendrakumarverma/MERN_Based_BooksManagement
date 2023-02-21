@@ -8,6 +8,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 export function Header() {
     const[searchData,setSearchData]= useState("");
@@ -22,9 +23,23 @@ export function Header() {
 
     function Logout() {
         localStorage.clear();
-        navigate("/login")
-        window.location.reload()
-    }
+        Swal.fire({
+            // position: 'top-end',
+            icon: 'success',
+            title: 'Logged Out!',
+            showConfirmButton: false,
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            },
+            timer: 2500
+          }).then(() => {
+            navigate("/login")
+            window.location.reload()
+            })
+        }
 
     return (
         <div>

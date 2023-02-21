@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2';
 //  import { Header } from "./Header";
 
 const backendServer = "http://localhost:8080/login"
@@ -11,7 +12,7 @@ function Login() {
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
-     navigate("/GetAllBooksList")
+      navigate("/GetAllBooksList")
     }
   }, [])
 
@@ -26,17 +27,43 @@ function Login() {
     axios.post(backendServer, correctRequestBody)
       .then((response) => {
         console.log("response", response)
-        alert(`success : ${response.data.message}`)
-        localStorage.setItem("loggedInUserId", `${response.data.data.userId}`)
-        localStorage.setItem("token", `${response.data.data.token}`)
-        localStorage.setItem("userEmail", email);
-        window.location.reload()
-        navigate("/GetAllBooksList");
+        //alert(`Success : ${response.data.message}`)
+        Swal.fire({
+          // position: 'top-end',
+          icon: 'success',
+          title: response.data.message,
+          showConfirmButton: false,
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          },
+          timer: 2500
+        }).then(() => {
+
+          localStorage.setItem("loggedInUserId", `${response.data.data.userId}`)
+          localStorage.setItem("token", `${response.data.data.token}`)
+          localStorage.setItem("userEmail", email);
+          window.location.reload()
+          navigate("/GetAllBooksList");
+        })
 
       })
       .catch((error) => {
         console.log("error", error.response.data.message)
-        alert(`Error: ${error.response.data.message}`)
+        // alert(`Error: ${error.response.data.message}`)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          },
+          text: error.response.data.message
+        })
       })
 
   }

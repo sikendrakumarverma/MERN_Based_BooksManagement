@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from "react";
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 function Update() {
   let location = useLocation();
@@ -29,31 +30,64 @@ function Update() {
 
   function EditBookData(id) {
 
-    alert(`Are you sure want to update this: ${id} ,Book`)
+    //alert(`Are you sure want to update this: ${id} ,Book`)
+    Swal.fire({
+      title: `Are you sure want to update this: ${id} ,Book`,
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(() => {
 
-    let formData = new FormData();
-    formData.append('file', file);
-    formData.append('title', title);
-    formData.append('excerpt', excerpt);
-    formData.append('reviews', reviews);
-    formData.append('releasedAt', releasedAt);
-    formData.append('category', category);
-    console.log(formData)
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('excerpt', excerpt);
+      formData.append('reviews', reviews);
+      formData.append('releasedAt', releasedAt);
+      formData.append('category', category);
+      console.log(formData)
 
-    axios.put("http://localhost:8080/books/" + bookId, formData, {
-      headers: {
-        "x-api-key": localStorage.getItem("token")
-      }
+      axios.put("http://localhost:8080/books/" + bookId, formData, {
+        headers: {
+          "x-api-key": localStorage.getItem("token")
+        }
+      })
+        .then((response) => {
+          console.log("response", response)
+          //alert(`success : ${response.data.message}`)
+          Swal.fire({
+            // position: 'top-end',
+            icon: 'success',
+            title: response.data.message,
+            showConfirmButton: false,
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            },
+            timer: 2500
+          }).then(() => {
+            navigate("/GetAllBooksList");
+          })
+
+        })
+        .catch((error) => {
+          console.log("error", error.response.data.message)
+          // alert(`Error: ${error.response.data.message}`)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            },
+            text: error.response.data.message
+          })
+        })
     })
-      .then((response) => {
-        console.log("response", response)
-        alert(`success : ${response.data.message}`)
-        navigate("/GetAllBooksList");
-      })
-      .catch((error) => {
-        console.log("error :", error.response.data.message)
-        alert(`Error: ${error.response.data.message}`)
-      })
   }
 
   return (

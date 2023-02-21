@@ -1,7 +1,8 @@
 // import { Header } from "./Header";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import Swal from 'sweetalert2';
 
 
 function Add() {
@@ -9,10 +10,10 @@ function Add() {
   let navigate = useNavigate();
 
   useEffect(() => {
-   if (!localStorage.getItem('token')) {
-        navigate("/login")
-   }
-},[])
+    if (!localStorage.getItem('token')) {
+      navigate("/login")
+    }
+  }, [])
 
   const [file, setFile] = useState("")
   const [title, setTitle] = useState("")
@@ -23,34 +24,63 @@ function Add() {
   const [subcategory, setSubcategory] = useState("")
   const [releasedAt, setReleasedAt] = useState("")
 
-  let CreateBookUrl= "http://localhost:8080/books"
-  let userId1= localStorage.getItem("loggedInUserId")
+  let CreateBookUrl = "http://localhost:8080/books"
+  let userId1 = localStorage.getItem("loggedInUserId")
   //console.log(file)
 
   function signUp() {
 
-    let formData = new FormData();    
-    formData.append('file', file);   
+    let formData = new FormData();
+    formData.append('file', file);
     formData.append('title', title);
-    formData.append('excerpt', excerpt);  
-    formData.append('ISBN', ISBN);  
-    formData.append('userId', userId1);  
-    formData.append('category', category);  
-    formData.append('subcategory', subcategory);  
-    formData.append('releasedAt', releasedAt);  
+    formData.append('excerpt', excerpt);
+    formData.append('ISBN', ISBN);
+    formData.append('userId', userId1);
+    formData.append('category', category);
+    formData.append('subcategory', subcategory);
+    formData.append('releasedAt', releasedAt);
 
-    axios.post(CreateBookUrl, formData, { headers:{
+    axios.post(CreateBookUrl, formData, {
+      headers: {
         "x-api-key": localStorage.getItem("token")
-    }})
+      }
+    })
       .then((response) => {
         console.log("response", response)
-        alert(`success : ${response.data.message}`)
-        navigate("/GetAllBooksList");
+        //alert(`success : ${response.data.message}`)
+        Swal.fire({
+          // position: 'top-end',
+          icon: 'success',
+          title: response.data.message,
+          showConfirmButton: true,
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          }
+          // timer: 2500
+        }).then(() => {
+          navigate("/GetAllBooksList");
+        })
+
       })
       .catch((error) => {
-        console.log("error :", error.response.data.message)
-        alert(`Error: ${error.response.data.message}`)
+        console.log("error", error.response.data.message)
+        //alert(`Error: ${error.response.data.message}`)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          },
+          text: error.response.data.message
+        })
       })
+
   }
 
   return (
@@ -59,7 +89,7 @@ function Add() {
       {/* <Header /> */}
       <h1> Create Book</h1>
       <div className="col-sm-6 offset-sm-3">
-        <input type="file"  onChange={(e) => setFile(e.target.files[0])} className="form-control" placeholder="bookCover" />
+        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="form-control" placeholder="bookCover" />
         <br />
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="form-control" placeholder="title" />
         <br />

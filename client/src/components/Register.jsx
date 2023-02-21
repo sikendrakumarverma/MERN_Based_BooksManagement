@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
  import { useNavigate } from 'react-router-dom'
+ import Swal from 'sweetalert2';
+
 // import {Header} from './Header'
 
 const backendServer = "http://localhost:8080/register"
@@ -48,12 +50,38 @@ function Register() {
         axios.post(backendServer, correctRequestBody)
             .then((response) => {
                 console.log("response", response)
-                alert(`success : ${response.data.message}`)
-                navigate("/login")
+                //alert(`success : ${response.data.message}`)
+                Swal.fire({
+                    // position: 'top-end',
+                    icon: 'success',
+                    title: response.data.message,
+                    showConfirmButton: true,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                    // timer: 2500
+                }).then(() => {
+                    navigate("/login");
+                })
+                
             })
             .catch((error) => {
                 console.log("error", error.response.data.message)
-                alert(`Error: ${error.response.data.message}`)
+                //alert(`Error: ${error.response.data.message}`)
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    },
+                    text: error.response.data.message
+                  })
             })
     }
 
